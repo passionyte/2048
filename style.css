@@ -1,3 +1,26 @@
 a {
     font-family: 'Courier New', Courier, monospace;   
 }
+
+h1 {
+    font-family:'Courier New', Courier, monospace;
+    font-weight: bolder;
+    font-size: xx-large
+}
+
+.score {
+    width: 45%;
+    aspect-ratio: 4/1;
+    background-color: gray;
+    display: inline-block;
+}
+
+button {
+    position: absolute;
+    top: 50%; 
+    width: 25%; 
+    aspect-ratio: 3/1; 
+    font-weight: bold; 
+    font-size: larger;
+    cursor: pointer
+}

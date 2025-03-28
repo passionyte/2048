@@ -1,7 +1,15 @@
 const tiles = document.getElementById("tiles") // Passionyte
 const tiledummy = document.getElementById("tiledummy")
+const sc = document.getElementById("score")
+const bt = document.getElementById("best")
+const gameo = document.getElementById("gameover")
+const gamew = document.getElementById("gamewin") 
 
-const tileset = []
+let tileset = []
+let gameover = false
+let canmove = true
+let score = 0
+let best = 0
 
 const binds = {
     ["w"]: "up",
@@ -14,7 +22,14 @@ const colors = {
     [2]: "rgb(238, 228, 218)",
     [4]: "rgb(237, 224, 200)",
     [8]: "rgb(242, 177, 121)",
-    [16]: "rgb(245, 149, 99)"
+    [16]: "rgb(245, 149, 99)",
+    [32]: "rgb(246, 124, 95)",
+    [64]: "rgb(246, 94, 59)",
+    [128]: "rgb(237, 207, 114)",
+    [256]: "rgb(237, 204, 97)",
+    [512]: "rgb(237, 200, 80)",
+    [1024]: "rgb(237, 197, 63)",
+    [2048]: "rgb(237, 194, 46)"
 }
 
 class Tile {
@@ -37,7 +52,42 @@ function randInt(min, max) {
     return Math.floor(((max - min) * Math.random() + min))
 }
 
-function drawBoard() {
+function loseCheck() {
+    let last = tileset[0]
+    let turns = 0
+
+    for (let y = 0; (y < 4); y++) {
+        for (let x = 0; (x < 4); x++) {
+            const me = findTile(x, y)
+
+            if (!last || ((me) && last.size == me.size)) {
+                turns++
+            }
+
+            last = me
+        }
+    }
+
+    console.log(turns)
+
+    return (turns == 0)
+}
+
+function incScore(x) {
+    score += x
+    if (score > best) {
+        best = score
+    }
+}
+
+function gameOver() {
+    gameover = true
+    gameo.hidden = false
+}
+
+function drawGame() {
+    sc.innerText = score
+    bt.innerText = best
     tiles.innerHTML = null
 
     for (let y = 0; (y < 4); y++) {
@@ -64,7 +114,7 @@ function drawBoard() {
 
                 const c = e.children
 
-                c[0].innerText = "E"
+                // c[0].innerText = "E"
 
                 e.style.display = "block"
     
@@ -72,8 +122,6 @@ function drawBoard() {
             }
         }
     }
-
-    console.log("board drawn")
 }
 
 function findTile(x, y) {
@@ -132,11 +180,20 @@ function createTile(x, y, t0, t1) {
             }
         }
 
-        tileset.push(new Tile(x, y, ((t0 && t1) && t0.size + t1.size) || ((Math.random() >= 0.75) && 4) || 2))
+        const size = ((t0 && t1) && t0.size + t1.size) || ((Math.random() >= 0.75) && 4) || 2
 
-        console.log(`created new tile at ${x}, ${y}`)
+        if (t0 && t1) {
+            incScore(size)
 
-        drawBoard()
+            if (size == 2048) { // win
+                gameover = true
+                gamew.hidden = false
+            }
+        }
+
+        tileset.push(new Tile(x, y, size))
+
+        drawGame()
 
         return true
     }
@@ -144,36 +201,78 @@ function createTile(x, y, t0, t1) {
     return false
 }
 
-for (let i = 0; (i < 2); i++) {
-    createTile(randInt(0, 3), randInt(0, 3)) 
-}
+function newGame() {
+    canmove = true
+    score = 0
 
-document.addEventListener("keypress", function(ev) {
+    gameo.hidden = true
+    gamew.hidden = true
+    gameover = false
+
+    tiles.innerHTML = null
+    tileset = []
+
+    for (let i = 0; (i < 2); i++) {
+        createTile(randInt(0, 3), randInt(0, 3)) 
+    }
+}
+newGame()
+
+document.addEventListener("keydown", function(ev) {
+    if (gameover || (canmove != true)) {
+        return
+    }
     const dir = binds[ev.key]
 
     if (dir) {
-        console.log(dir)
+        canmove = ev.key
+
         for (const tile of tileset) {
             while (true) { // could be bad
-                console.log("attempting to move a tile")
                 const r = shiftTile(tile, dir)
 
                 if (!r) {
-                    drawBoard()
+                    drawGame()
                     break
                 }
             }
         }
 
-        let strikes = 0
-        while (true) { // also could be bad. try and place a tile anywhere on the board
-            console.log('attempting to place new tile')
-            strikes++
-            const r = createTile(randInt(0, 3), randInt(0, 3)) 
+        if (tileset.length < 16) {
+            const available = []
 
-            if (r || (strikes >= 9)) {
-                break
+            for (let y = 0; (y < 4); y++) {
+                for (let x = 0; (x < 4); x++) {
+                    if (!findTile(x, y)) {
+                        available.push([x, y])
+                    }
+                }
+            }
+
+            if (available.length > 0) {
+                const rand = ((available.length > 1) && available[randInt(0, (available.length - 1))]) || available[0]
+
+                if (rand) {
+                    createTile(rand[0], rand[1])
+                }
             }
         }
+
+        if (loseCheck()) {
+            gameover = true
+            gameo.hidden = false
+        }
     }
+})
+
+document.addEventListener("keyup", function(ev) {
+    if (canmove == ev.key) {
+        canmove = true
+    }
+})
+
+document.getElementById("restart").addEventListener("click", newGame)
+document.getElementById("continue", function() {
+    gamew.hidden = true
+    gameover = false
 })
