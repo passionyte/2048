@@ -8,31 +8,37 @@
     </head>
 
     <body>
-        <h1>Passionyte's 2048</h1>
-        <div style="width: 15%; display: inline-block; margin-bottom: 2%">
-            <div class="score">
-                <a style="text-align: center; width: 100%; display: block; font-size: larger; font-weight: bolder">Score</a>
-                <br>
-                <a style="text-align: center; width: 100%; display: block" id="score">0</a>
+        <h1 style="margin-left: 15%">Passionyte's 2048</h1>
+        <div style="position: absolute; left: 35%; right: 0%">
+            <div style="width: 15%; display: inline-block; margin-bottom: 2%">
+                <div class="score">
+                    <a class="ctext" style="font-size: larger; font-weight: bolder">Score</a>
+                    <br>
+                    <a class="ctext" id="score">0</a>
+                </div>
+                <div class="score" style="margin-left: 5%">
+                    <a class="ctext" style="font-size: larger; font-weight: bolder">Best</a>
+                    <br>
+                    <a class="ctext" id="best">0</a>
+                </div>
             </div>
-            <div class="score" style="margin-left: 5%">
-                <a style="text-align: center; width: 100%; display: block; font-size: larger; font-weight: bolder">Best</a>
-                <br>
-                <a style="text-align: center; width: 100%; display: block" id="best">0</a>
+            <div id="tiles" class="grid" style="background-color: rgb(150, 150, 150);"></div>
+            <div id="gameover" class="grid" style="background-color: rgba(220, 190, 50, 0.75)" hidden>
+                <a class="resulttext">Game over</a>
+                <button id="restart" style="left: 37%">Restart</button>
+            </div>
+            <div id="gamewin" class="grid" style="background-color: rgba(220, 190, 50, 0.75)" hidden>
+                <a class="resulttext">You win!</a>
+                <button id="continue" style="left: 18%">Continue</button>
+                <button id="restart">Restart</button>
+            </div>
+            <div id="tiledummy" style="display: none; width: 25%; aspect-ratio: 1/1; float: left">
+                <a style="display: block; height: 50%; padding-top: 45%; font-size: x-large"></a>
             </div>
         </div>
-        <div id="tiles" style="width: 40%; aspect-ratio: 1/1; position: absolute; background-color: gray;"></div>
-        <div id="gameover" style="width: 40%; aspect-ratio: 1/1; position: absolute; background-color: rgba(220, 190, 50, 0.75)" hidden>
-            <a style="text-align: center; font-size: xx-large; font-weight: bold; position: absolute; width: 100%; top: 25%">Game over</a>
-            <button id="restart" style="left: 37%">Restart</button>
-        </div>
-        <div id="gamewin" style="width: 40%; aspect-ratio: 1/1; position: absolute; background-color: rgba(220, 190, 50, 0.75)" hidden>
-            <a style="text-align: center; font-size: xx-large; font-weight: bold; position: absolute; width: 100%; top: 25%">You win!</a>
-            <button id="continue">Continue</button>
-            <button id="restart">Restart</button>
-        </div>
-        <div id="tiledummy" style="display: none; width: 25%; aspect-ratio: 1/1; float: left">
-            <a style="display: block; height: 50%; padding-top: 45%; text-align: center; font-size: x-large"></a>
-        </div>
+        <footer>
+            <a><b>Passionyte's 2048 - © 2025 Passionyte</b></a>
+        </footer>
+        <script src="game.js"></script>
     </body>
 </html>

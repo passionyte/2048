@@ -7,9 +7,10 @@ const gamew = document.getElementById("gamewin")
 
 let tileset = []
 let gameover = false
-let canmove = true
+let busy = false
 let score = 0
 let best = 0
+let merged
 
 const binds = {
     ["w"]: "up",
@@ -53,10 +54,8 @@ function randInt(min, max) {
 }
 
 function loseCheck() {
-    let turns = 0
-    
-    for (let y = 0; (y < 4); y++) {
-        for (let x = 0; (x < 4); x++) {
+    for (let x = 0; (x < 4); x++) {
+        for (let y = 0; (y < 4); y++) {
             const me = findTile(x, y)
 
             if (me) {
@@ -64,25 +63,23 @@ function loseCheck() {
                 dirs.push(findTile(x, (y - 1)))
                 dirs.push(findTile(x, (y + 1)))
                 dirs.push(findTile((x - 1), y))
-                dirs.push(findTile((x + 1), 1))
+                dirs.push(findTile((x + 1), y))
 
                 for (const dir of dirs) {
                     if (dir) {
-                        if (dir.size == me.size || dir.size == 0) {
-                            turns++
+                        if (dir.size == me.size) {
+                            return false
                         }
                     }
                 }
             }
             else {
-                turns++
+                return false
             }
         }
     }
 
-    console.log(turns)
-
-    return (turns == 0)
+    return true
 }
 
 function incScore(x) {
@@ -139,7 +136,7 @@ function drawGame() {
 function findTile(x, y) {
     let result
 
-    for (const tile of tileset) {
+    for (const tile of tileset) { // Grrr! could be inefficient
         if (tile.x == x && tile.y == y) {
             result = tile
             break
@@ -167,9 +164,10 @@ function shiftTile(tile, dir) {
             return true
         }
         else {
-            if (occupant.size == tile.size) {
+            if (occupant.size == tile.size && merged != occupant) {
                 console.log(`combining two ${tile.size} tiles`)
                 createTile(occupant.x, occupant.y, tile, occupant)
+                merged = occupant
 
                 return false
             }
@@ -183,13 +181,7 @@ function createTile(x, y, t0, t1) {
     const occupant = findTile(x, y)
     if (!occupant || occupant == t0 || occupant == t1) {
         if (t0 && t1) {
-            for (let i = 0; (i < tileset.length); i++) {
-                const v = tileset[i]
-
-                if (v == t0 || v == t1) {
-                    tileset.splice(i, 1)
-                }
-            }
+            tileset = tileset.filter(v => v !== t0 && v !== t1);
         }
 
         const size = ((t0 && t1) && t0.size + t1.size) || ((Math.random() >= 0.75) && 4) || 2
@@ -231,23 +223,23 @@ function newGame() {
 newGame()
 
 document.addEventListener("keydown", function(ev) {
-    if (gameover || (canmove != true)) {
+    if (gameover || (busy)) {
         return
     }
+
+    merged = null
+
     const dir = binds[ev.key]
 
     if (dir) {
-        canmove = ev.key
+        busy = ev.key
 
         for (const tile of tileset) {
-            while (true) { // could be bad
-                const r = shiftTile(tile, dir)
-
-                if (!r) {
-                    drawGame()
-                    break
-                }
-            }
+            let shift = false
+            do { // could still be bad?
+                shift = (shiftTile(tile, dir))
+                drawGame()
+            } while (shift)
         }
 
         if (tileset.length < 16) {
@@ -278,8 +270,8 @@ document.addEventListener("keydown", function(ev) {
 })
 
 document.addEventListener("keyup", function(ev) {
-    if (canmove == ev.key) {
-        canmove = true
+    if (busy == ev.key) {
+        busy = false
     }
 })
 

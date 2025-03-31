@@ -1,5 +1,11 @@
 a {
     font-family: 'Courier New', Courier, monospace;   
+    text-align: center;
+}
+
+.ctext {
+    width: 100%;
+    display: block
 }
 
 h1 {
@@ -11,7 +17,7 @@ h1 {
 .score {
     width: 45%;
     aspect-ratio: 4/1;
-    background-color: gray;
+    background-color: rgb(150, 150, 150);
     display: inline-block;
 }
 
@@ -23,4 +29,29 @@ button {
     font-weight: bold; 
     font-size: larger;
     cursor: pointer
+}
+
+.grid {
+    width: 40%; 
+    aspect-ratio: 1/1; 
+    position: absolute;
+}
+
+.resulttext {
+    font-size: xx-large; 
+    font-weight: bold; 
+    position: absolute; 
+    width: 100%; 
+    top: 25%"
+}
+
+footer {
+    width: 100%;
+    display: block;
+    background-color: rgb(150, 150, 150);
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+    margin: auto;
+    position: fixed
 }
