@@ -53,18 +53,30 @@ function randInt(min, max) {
 }
 
 function loseCheck() {
-    let last = tileset[0]
     let turns = 0
-
+    
     for (let y = 0; (y < 4); y++) {
         for (let x = 0; (x < 4); x++) {
             const me = findTile(x, y)
 
-            if (!last || ((me) && last.size == me.size)) {
+            if (me) {
+                const dirs = []
+                dirs.push(findTile(x, (y - 1)))
+                dirs.push(findTile(x, (y + 1)))
+                dirs.push(findTile((x - 1), y))
+                dirs.push(findTile((x + 1), 1))
+
+                for (const dir of dirs) {
+                    if (dir) {
+                        if (dir.size == me.size || dir.size == 0) {
+                            turns++
+                        }
+                    }
+                }
+            }
+            else {
                 turns++
             }
-
-            last = me
         }
     }
 
