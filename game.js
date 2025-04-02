@@ -7,7 +7,12 @@ const gamew = document.getElementById("gamewin")
 
 let tileset = []
 let gameover = false
+<<<<<<< HEAD
 let busy = false
+=======
+let haswon = false
+let canmove = true
+>>>>>>> bd2679c (A)
 let score = 0
 let best = 0
 let merged
@@ -37,6 +42,7 @@ class Tile {
     x = 0
     y = 0
     #size = 0
+    locked = false
 
     get size() {
         return this.#size
@@ -180,21 +186,36 @@ function shiftTile(tile, dir) {
 function createTile(x, y, t0, t1) {
     const occupant = findTile(x, y)
     if (!occupant || occupant == t0 || occupant == t1) {
+        let size
+
         if (t0 && t1) {
+<<<<<<< HEAD
             tileset = tileset.filter(v => v !== t0 && v !== t1);
         }
+=======
+            for (let i = 0; (i < tileset.length); i++) {
+                const v = tileset[i]
 
-        const size = ((t0 && t1) && t0.size + t1.size) || ((Math.random() >= 0.75) && 4) || 2
+                if (v == t0 || v == t1) {
+                    tileset.splice(i, 1)
+                }
+            }
+>>>>>>> bd2679c (A)
 
-        if (t0 && t1) {
+            size = (t0.size + t1.size) 
+
             incScore(size)
 
-            if (size == 2048) { // win
+            if (!haswon && (size == 4)) { // win
                 gameover = true
                 gamew.hidden = false
             }
         }
+        else {
+            size = ((Math.random() >= 0.75) && 4) || 2
+        }
 
+        console.log(`new tile of size ${size} created at ${x}, ${y}`)
         tileset.push(new Tile(x, y, size))
 
         drawGame()
@@ -212,6 +233,7 @@ function newGame() {
     gameo.hidden = true
     gamew.hidden = true
     gameover = false
+    haswon = false
 
     tiles.innerHTML = null
     tileset = []
@@ -235,12 +257,23 @@ document.addEventListener("keydown", function(ev) {
         busy = ev.key
 
         for (const tile of tileset) {
+<<<<<<< HEAD
             let shift = false
             do { // could still be bad?
                 shift = (shiftTile(tile, dir))
                 drawGame()
             } while (shift)
+=======
+            while (true) { // could be bad
+                const r = shiftTile(tile, dir)
+
+                if (!r) {
+                    break
+                }
+            }
+>>>>>>> bd2679c (A)
         }
+        drawGame()
 
         if (tileset.length < 16) {
             const available = []
@@ -276,7 +309,8 @@ document.addEventListener("keyup", function(ev) {
 })
 
 document.getElementById("restart").addEventListener("click", newGame)
-document.getElementById("continue", function() {
+document.getElementById("continue").addEventListener("click", function() {
     gamew.hidden = true
     gameover = false
+    haswon = true
 })

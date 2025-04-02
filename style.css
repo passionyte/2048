@@ -31,18 +31,9 @@ button {
     cursor: pointer
 }
 
-.grid {
-    width: 40%; 
-    aspect-ratio: 1/1; 
-    position: absolute;
-}
-
-.resulttext {
-    font-size: xx-large; 
-    font-weight: bold; 
-    position: absolute; 
-    width: 100%; 
-    top: 25%"
+span {
+    display: block;
+    font-family: 'Courier New', Courier, monospace;   
 }
 
 footer {
