@@ -225,7 +225,7 @@ function createTile(x, y, t0, t1) {
 
             incScore(size)
 
-            if (!haswon && (size == 4)) { // win
+            if (!haswon && (size == 2048)) { // win
                 handleResults(null, true)
             }
         }
