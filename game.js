@@ -7,15 +7,12 @@ const gamew = document.getElementById("gamewin")
 
 let tileset = []
 let gameover = false
-<<<<<<< HEAD
 let busy = false
-=======
-let haswon = false
-let canmove = true
->>>>>>> bd2679c (A)
 let score = 0
 let best = 0
 let merged
+let cgameo
+let cgamew
 
 const binds = {
     ["w"]: "up",
@@ -42,7 +39,6 @@ class Tile {
     x = 0
     y = 0
     #size = 0
-    locked = false
 
     get size() {
         return this.#size
@@ -95,12 +91,11 @@ function incScore(x) {
     }
 }
 
-function gameOver() {
-    gameover = true
-    gameo.hidden = false
-}
-
 function drawGame() {
+    if (gameover) { 
+        return
+    }
+
     sc.innerText = score
     bt.innerText = best
     tiles.innerHTML = null
@@ -111,6 +106,8 @@ function drawGame() {
 
             if (tile) {
                 const e = tiledummy.cloneNode(true)
+
+                e.id = "tile"
 
                 const c = e.children
 
@@ -127,9 +124,7 @@ function drawGame() {
             else {
                 const e = tiledummy.cloneNode(true)
 
-                const c = e.children
-
-                // c[0].innerText = "E"
+                e.id = "tile"
 
                 e.style.display = "block"
     
@@ -150,6 +145,42 @@ function findTile(x, y) {
     }
 
     return result
+}
+
+function handleResults(clear, win) {
+    if (!clear) {
+        gameover = true
+        if (win) {
+            cgamew = gamew.cloneNode(true)
+            cgamew.hidden = false
+
+            const c = cgamew.children
+            c[1].addEventListener("click", function() {
+                handleResults(true, true)
+            })
+            c[2].addEventListener("click", newGame)
+            tiles.appendChild(cgamew)
+        }
+        else {
+            cgameo = gameo.cloneNode(true)
+            cgameo.hidden = false
+            cgameo.children[1].addEventListener("click", newGame)
+            tiles.appendChild(cgameo)
+        }
+    }
+    else {
+        gameover = false
+        haswon = (win)
+
+        if (cgameo) {
+            cgameo.remove()
+            cgameo = null
+        }
+        if (cgamew) {
+            cgamew.remove()
+            cgamew = null
+        }
+    }
 }
 
 function shiftTile(tile, dir) {
@@ -189,26 +220,13 @@ function createTile(x, y, t0, t1) {
         let size
 
         if (t0 && t1) {
-<<<<<<< HEAD
-            tileset = tileset.filter(v => v !== t0 && v !== t1);
-        }
-=======
-            for (let i = 0; (i < tileset.length); i++) {
-                const v = tileset[i]
-
-                if (v == t0 || v == t1) {
-                    tileset.splice(i, 1)
-                }
-            }
->>>>>>> bd2679c (A)
-
+            tileset = tileset.filter(v => v !== t0 && v !== t1)
             size = (t0.size + t1.size) 
 
             incScore(size)
 
             if (!haswon && (size == 4)) { // win
-                gameover = true
-                gamew.hidden = false
+                handleResults(null, true)
             }
         }
         else {
@@ -230,10 +248,7 @@ function newGame() {
     canmove = true
     score = 0
 
-    gameo.hidden = true
-    gamew.hidden = true
-    gameover = false
-    haswon = false
+    handleResults(true)
 
     tiles.innerHTML = null
     tileset = []
@@ -257,21 +272,10 @@ document.addEventListener("keydown", function(ev) {
         busy = ev.key
 
         for (const tile of tileset) {
-<<<<<<< HEAD
             let shift = false
             do { // could still be bad?
                 shift = (shiftTile(tile, dir))
-                drawGame()
             } while (shift)
-=======
-            while (true) { // could be bad
-                const r = shiftTile(tile, dir)
-
-                if (!r) {
-                    break
-                }
-            }
->>>>>>> bd2679c (A)
         }
         drawGame()
 
@@ -296,8 +300,7 @@ document.addEventListener("keydown", function(ev) {
         }
 
         if (loseCheck()) {
-            gameover = true
-            gameo.hidden = false
+            handleResults(null, false)
         }
     }
 })
@@ -306,11 +309,4 @@ document.addEventListener("keyup", function(ev) {
     if (busy == ev.key) {
         busy = false
     }
-})
-
-document.getElementById("restart").addEventListener("click", newGame)
-document.getElementById("continue").addEventListener("click", function() {
-    gamew.hidden = true
-    gameover = false
-    haswon = true
 })

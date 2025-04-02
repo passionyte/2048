@@ -21,11 +21,27 @@ h1 {
     display: inline-block;
 }
 
-button {
+.grid {
+    width: 40%; 
+    aspect-ratio: 1/1; 
+}
+
+.results {
+    width: 100%;
     position: absolute;
-    top: 50%; 
-    width: 25%; 
-    aspect-ratio: 3/1; 
+    aspect-ratio: 1/1;
+    background-color: rgba(220, 190, 50, 0.75)
+}
+
+.resulttext {
+    font-size: xx-large; 
+    font-weight: bold; 
+    width: auto;
+    display: block; 
+    margin-top: 25%;
+}
+
+button {
     font-weight: bold; 
     font-size: larger;
     cursor: pointer
