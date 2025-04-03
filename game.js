@@ -310,9 +310,9 @@ if (!mobile) {
         const dir = binds[ev.key]
     
         if (dir) {
-            busy = ev.key
-    
             onInput(dir)
+
+            busy = ev.key
         }
     })
 
@@ -324,6 +324,7 @@ if (!mobile) {
 }
 else {
     $("mobile").hidden = false
+    $("pccontrols").hidden = true
 
     $("up").addEventListener("click", function () {
         onInput("up")
