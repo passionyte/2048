@@ -1,9 +1,9 @@
-const tiles = document.getElementById("tiles") // Passionyte
-const tiledummy = document.getElementById("tiledummy")
-const sc = document.getElementById("score")
-const bt = document.getElementById("best")
-const gameo = document.getElementById("gameover")
-const gamew = document.getElementById("gamewin") 
+const tiles = $("tiles") // Passionyte
+const tiledummy = $("tiledummy")
+const sc = $("score")
+const bt = $("best")
+const gameo = $("gameover")
+const gamew = $("gamewin") 
 
 let tileset = []
 let gameover = false
@@ -13,6 +13,8 @@ let best = 0
 let merged
 let cgameo
 let cgamew
+
+const mobile = ((navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) || window.wiiu) || false
 
 const binds = {
     ["w"]: "up",
@@ -53,6 +55,10 @@ class Tile {
 
 function randInt(min, max) {
     return Math.floor(((max - min) * Math.random() + min))
+}
+
+function $(id) {
+    return document.getElementById(id)
 }
 
 function loseCheck() {
@@ -155,16 +161,16 @@ function handleResults(clear, win) {
             cgamew.hidden = false
 
             const c = cgamew.children
-            c[1].addEventListener("click", function() {
+            cgamew.querySelector("#continue").addEventListener("click", function() {
                 handleResults(true, true)
             })
-            c[2].addEventListener("click", newGame)
+            cgamew.querySelector("#restart").addEventListener("click", newGame)
             tiles.appendChild(cgamew)
         }
         else {
             cgameo = gameo.cloneNode(true)
             cgameo.hidden = false
-            cgameo.children[1].addEventListener("click", newGame)
+            cgameo.querySelector("#restart").addEventListener("click", newGame)
             tiles.appendChild(cgameo)
         }
     }
@@ -259,54 +265,76 @@ function newGame() {
 }
 newGame()
 
-document.addEventListener("keydown", function(ev) {
+function onInput(dir) {
     if (gameover || (busy)) {
         return
     }
 
     merged = null
 
-    const dir = binds[ev.key]
+    for (const tile of tileset) {
+        let shift = false
+        do { // could still be bad?
+            shift = (shiftTile(tile, dir))
+        } while (shift)
+    }
+    drawGame()
 
-    if (dir) {
-        busy = ev.key
+    if (tileset.length < 16) {
+        const available = []
 
-        for (const tile of tileset) {
-            let shift = false
-            do { // could still be bad?
-                shift = (shiftTile(tile, dir))
-            } while (shift)
-        }
-        drawGame()
-
-        if (tileset.length < 16) {
-            const available = []
-
-            for (let y = 0; (y < 4); y++) {
-                for (let x = 0; (x < 4); x++) {
-                    if (!findTile(x, y)) {
-                        available.push([x, y])
-                    }
-                }
-            }
-
-            if (available.length > 0) {
-                const rand = ((available.length > 1) && available[randInt(0, (available.length - 1))]) || available[0]
-
-                if (rand) {
-                    createTile(rand[0], rand[1])
+        for (let y = 0; (y < 4); y++) {
+            for (let x = 0; (x < 4); x++) {
+                if (!findTile(x, y)) {
+                    available.push([x, y])
                 }
             }
         }
 
-        if (loseCheck()) {
-            handleResults(null, false)
+        if (available.length > 0) {
+            const rand = ((available.length > 1) && available[randInt(0, (available.length - 1))]) || available[0]
+
+            if (rand) {
+                createTile(rand[0], rand[1])
+            }
         }
     }
-})
 
-document.addEventListener("keyup", function(ev) {
-    if (busy == ev.key) {
-        busy = false
+    if (loseCheck()) {
+        handleResults(null, false)
     }
-})
+}
+
+if (!mobile) {
+    document.addEventListener("keydown", function(ev) { 
+        const dir = binds[ev.key]
+    
+        if (dir) {
+            busy = ev.key
+    
+            onInput(dir)
+        }
+    })
+
+    document.addEventListener("keyup", function(ev) {
+        if (busy == ev.key) {
+            busy = false
+        }
+    })
+}
+else {
+    $("mobile").hidden = false
+
+    $("up").addEventListener("click", function () {
+        onInput("up")
+    })
+    $("dn").addEventListener("click", function () {
+        onInput("dn")
+    })
+    $("lt").addEventListener("click", function () {
+        onInput("lt")
+    })
+    $("rt").addEventListener("click", function () {
+        onInput("rt")
+    })
+}

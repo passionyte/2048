@@ -62,3 +62,8 @@ footer {
     margin: auto;
     position: fixed
 }
+
+.mobile {
+    width: 10%;
+    aspect-ratio: 2/1
+}
